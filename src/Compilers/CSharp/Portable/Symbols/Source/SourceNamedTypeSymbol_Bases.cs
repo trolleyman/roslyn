@@ -27,7 +27,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         private ImmutableArray<NamedTypeSymbol> _lazyInterfaces;
 
         /// <summary>
-        /// Gets the BaseType of this type. If the base type could not be determined, then 
+        /// Gets the BaseType of this type. If the base type could not be determined, then
         /// an instance of ErrorType is returned. If this kind of type does not have a base type
         /// (for example, interfaces), null is returned. Also the special class System.Object
         /// always has a BaseType of null.
@@ -434,7 +434,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         }
 
         // process the base list for one part of a partial class, or for the only part of any other type declaration.
-        private Tuple<NamedTypeSymbol, ImmutableArray<NamedTypeSymbol>> MakeOneDeclaredBases(ConsList<TypeSymbol> newBasesBeingResolved, SingleTypeDeclaration decl, BindingDiagnosticBag diagnostics)
+        private Tuple<ImmutableArray<NamedTypeSymbol>, ImmutableArray<NamedTypeSymbol>> MakeOneDeclaredBases(ConsList<TypeSymbol> newBasesBeingResolved, SingleTypeDeclaration decl, BindingDiagnosticBag diagnostics)
         {
             BaseListSyntax bases = GetBaseListOpt(decl);
             if (bases == null)
@@ -442,7 +442,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 return null;
             }
 
-            NamedTypeSymbol localBase = null;
+            var localBases = ArrayBuilder<NamedTypeSymbol>.GetInstance();
             var localInterfaces = ArrayBuilder<NamedTypeSymbol>.GetInstance();
             var baseBinder = this.DeclaringCompilation.GetBinder(bases);
 
@@ -465,7 +465,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
 
                 TypeSymbol baseType;
 
-                if (i == 0 && TypeKind == TypeKind.Class) // allow class in the first position
+                if (TypeKind == TypeKind.Class) // allow class in all positions!
                 {
                     baseType = baseBinder.BindType(typeSyntax, diagnostics, newBasesBeingResolved).Type;
 
@@ -519,8 +519,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                     if ((baseType.TypeKind == TypeKind.Class ||
                          baseType.TypeKind == TypeKind.Delegate ||
                          baseType.TypeKind == TypeKind.Struct ||
-                         baseTypeIsErrorWithoutInterfaceGuess) &&
-                        ((object)localBase == null))
+                         baseTypeIsErrorWithoutInterfaceGuess))
                     {
                         localBase = (NamedTypeSymbol)baseType;
                         Debug.Assert((object)localBase != null);
@@ -625,7 +624,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 diagnostics.Add(ErrorCode.ERR_ObjectCantHaveBases, new SourceLocation(name));
             }
 
-            return new Tuple<NamedTypeSymbol, ImmutableArray<NamedTypeSymbol>>(localBase, localInterfaces.ToImmutableAndFree());
+            return new Tuple<ImmutableArray<NamedTypeSymbol>, ImmutableArray<NamedTypeSymbol>>(localBases, localInterfaces.ToImmutableAndFree());
 
             void checkPrimaryConstructorBaseType(BaseTypeSyntax baseTypeSyntax, TypeSymbol baseType)
             {

@@ -882,7 +882,7 @@ namespace Microsoft.CodeAnalysis.CSharp
         WRN_ComparisonToSelf = 1718,
         ERR_CantOpenWin32Res = 1719,
         WRN_DotOnDefault = 1720,
-        ERR_NoMultipleInheritance = 1721,
+        // ERR_NoMultipleInheritance = 1721, // No error, no problem? :')
         ERR_BaseClassMustBeFirst = 1722,
         WRN_BadXMLRefTypeVar = 1723,
         //ERR_InvalidDefaultCharSetValue = 1724,    Not used in Roslyn.

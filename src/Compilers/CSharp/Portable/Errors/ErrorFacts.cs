@@ -1288,7 +1288,6 @@ namespace Microsoft.CodeAnalysis.CSharp
                 case ErrorCode.WRN_ComparisonToSelf:
                 case ErrorCode.ERR_CantOpenWin32Res:
                 case ErrorCode.WRN_DotOnDefault:
-                case ErrorCode.ERR_NoMultipleInheritance:
                 case ErrorCode.ERR_BaseClassMustBeFirst:
                 case ErrorCode.WRN_BadXMLRefTypeVar:
                 case ErrorCode.ERR_FriendAssemblyBadArgs:
